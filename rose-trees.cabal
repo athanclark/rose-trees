@@ -19,6 +19,7 @@ Library
                       , containers
                       , semigroups
                       , data-default
+                      , pseudo-trie
                       , transformers
 
 Test-Suite spec

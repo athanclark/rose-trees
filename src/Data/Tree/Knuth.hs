@@ -4,8 +4,9 @@
 
 module Data.Tree.Knuth where
 
+import Prelude hiding (foldr)
 import Data.Monoid
-
+import Data.Foldable
 
 data KnuthForest a = Fork { node :: a
                           , children :: (KnuthForest a)
