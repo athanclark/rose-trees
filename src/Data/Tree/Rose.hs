@@ -28,7 +28,7 @@ data PseudoTrie t a = More (t, Maybe a) (NonEmpty (PseudoTrie t a))
                     | Nil
   deriving (Show, Eq)
 
-newtype ContainerPT t a = ContainerPT (t, Maybe a)
+newtype PT t a = PT (t, Maybe a)
 
-instance Default t => RoseTree (PseudoTrie t) NonEmpty (ContainerPT t) where
-  (@->) (ContainerPT x) xs = More x xs
+instance Default t => RoseTree (PseudoTrie t) NonEmpty (PT t) where
+  (@->) (PT x) xs = More x xs
