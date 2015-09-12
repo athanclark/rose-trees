@@ -4,6 +4,19 @@
   , GeneralizedNewtypeDeriving
   #-}
 
+-- |
+-- Module      : Data.Tree.Knuth
+-- Copyright   : (c) 2014, 2015 Athan Clark
+--
+-- License     : BSD-style
+-- Maintainer  : athan.clark@gmail.com
+-- Stability   : experimental
+-- Portability : GHC
+--
+-- An implementation of
+-- <https://en.wikipedia.org/wiki/Left-child_right-sibling_binary_tree left-child, right-sibling binary trees>.
+
+
 module Data.Tree.Knuth where
 
 import Prelude hiding (foldr)
