@@ -22,6 +22,9 @@ module Data.Tree.Knuth where
 import Prelude hiding (foldr)
 import Data.Monoid
 import Data.Foldable
+import Data.Traversable
+import Control.Applicative
+import Control.Monad
 
 
 data KnuthForest a = Fork { kNode :: a
@@ -30,19 +33,36 @@ data KnuthForest a = Fork { kNode :: a
                    | Nil
   deriving (Show, Eq, Functor)
 
-appendSibling :: KnuthForest a -> KnuthForest a -> KnuthForest a
-appendSibling Nil _ = Nil
-appendSibling (Fork x xc Nil) y = Fork x xc y
-appendSibling (Fork x xc xs) y = Fork x xc $ appendSibling xs y
+-- | Zipper-style
+instance Applicative KnuthForest where
+  pure x = Fork x Nil Nil
+  Nil <*> _ = Nil
+  _ <*> Nil = Nil
+  (Fork f fc fs) <*> (Fork x xc xs) =
+    Fork (f x) (fc <*> xc) (fs <*> xs)
+
+-- | Breadth-first
+instance Monad KnuthForest where
+  return x = Fork x Nil Nil
+  Nil >>= _ = Nil
+  (Fork x xc xs) >>= f = f x `union` (xs >>= f) `union` (xc >>= f)
+
+union :: KnuthForest a -> KnuthForest a -> KnuthForest a
+union Nil _ = Nil
+union (Fork x xc Nil) y = Fork x xc y
+union (Fork x xc xs) y = Fork x xc $ union xs y
 
 instance Monoid (KnuthForest a) where
   mempty = Nil
-  mappend = appendSibling
+  mappend = union
 
+-- | Breadth-first
 instance Foldable KnuthForest where
-  foldr f acc Nil = acc
+  foldr _ acc Nil = acc
   foldr f acc (Fork x xc xs) =
     foldr f (foldr f (f x acc) xs) xc
+
+
 
 newtype KnuthTree a = KnuthTree { unKnuthTree :: (a, KnuthForest a) }
   deriving (Show, Eq, Functor)
