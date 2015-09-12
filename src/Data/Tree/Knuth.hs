@@ -1,6 +1,8 @@
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE
+    KindSignatures
+  , DeriveFunctor
+  , GeneralizedNewtypeDeriving
+  #-}
 
 module Data.Tree.Knuth where
 
@@ -8,9 +10,10 @@ import Prelude hiding (foldr)
 import Data.Monoid
 import Data.Foldable
 
-data KnuthForest a = Fork { node :: a
-                          , children :: (KnuthForest a)
-                          , siblings :: (KnuthForest a) }
+
+data KnuthForest a = Fork { kNode :: a
+                          , kChildren :: KnuthForest a
+                          , kSiblings :: KnuthForest a }
                    | Nil
   deriving (Show, Eq, Functor)
 

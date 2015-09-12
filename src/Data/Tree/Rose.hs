@@ -1,32 +1,37 @@
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE
+    TypeFamilies
+  , KindSignatures
+  , MultiParamTypeClasses
+  , FunctionalDependencies
+  , FlexibleInstances
+  #-}
 
 module Data.Tree.Rose where
 
-import Data.Tree.Rose.Internal
-
 import Data.Tree (Tree (Node))
 import Data.Tree.Knuth
-import Data.Trie.Pseudo hiding (Nil)
-import Data.List.NonEmpty (NonEmpty (..))
-import Data.Default
-import Data.Functor.Identity
 
-class RoseTree (c :: * -> *) (u :: * -> *) (t :: * -> *) | c -> u, c -> t where
-  (@->) :: t a -> u (c a) -> c a
+
+type family Head (x :: *) :: *
+type family Tail (y :: *) :: *
+
+class RoseTree (c :: * -> *) where
+  (@->) :: Head (c a) -> Tail (c a) -> c a
 
 infixr 9 @->
 
-instance RoseTree Tree [] Identity where
-  (@->) (Identity x) xs = Node x xs
 
-newtype PT t a = PT (t, Maybe a)
+-- Data.Tree
+type instance Head (Tree a) = a
+type instance Tail (Tree a) = [Tree a]
 
-instance Default t => RoseTree (PseudoTrie t) NonEmpty (PT t) where
-  (@->) (PT x) xs = More x xs
+instance RoseTree Tree where
+  (@->) = Node
 
-instance RoseTree KnuthForest Identity Identity where
-  (@->) (Identity x) (Identity xs) = Fork x xs Nil
+
+-- Data.Tree.Knuth
+type instance Head (KnuthForest a) = a
+type instance Tail (KnuthForest a) = KnuthForest a
+
+instance RoseTree KnuthForest where
+  x @-> xs = Fork x xs Nil
