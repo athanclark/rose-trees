@@ -1,27 +1,52 @@
+{-# LANGUAGE
+    DeriveFoldable
+  , FlexibleInstances
+  , MultiParamTypeClasses
+  #-}
+
 module Data.Tree.Set where
 
 import Prelude hiding (map, elem, filter)
 import qualified Data.Set as Set
 import qualified Data.Foldable as F
 import qualified Data.Maybe as M
-import Data.Monoid
+import Data.Monoid hiding ((<>))
+import Data.Semigroup
+import Data.Semigroup.Foldable
+import qualified Data.Set.Class as Sets
+import Control.Applicative
 import Control.Monad
+
+import Test.QuickCheck
+import Test.QuickCheck.Instances
 
 
 data SetTree a = SetTree
   { sNode     :: a
   , sChildren :: Set.Set (SetTree a)
-  } deriving (Show, Eq, Ord)
+  } deriving (Show, Eq, Ord, Foldable)
 
--- TODO:
--- - Semigroup over union?
--- - Foldable, Traversable? Foldable1
+instance (Ord a, Arbitrary a) => Arbitrary (SetTree a) where
+  arbitrary = liftA2 SetTree arbitrary arbitrary
+
+instance Foldable1 SetTree where
+  fold1 (SetTree x xs) = F.foldr (\a acc -> sNode a <> acc) x xs
+
+instance Sets.HasSize (SetTree a) where
+  size = size
+
+instance Sets.HasSingleton a (SetTree a) where
+  singleton = singleton
+
 
 -- * Query
 
 -- | set-like alias for @isDescendantOf@.
 elem :: Eq a => a -> SetTree a -> Bool
 elem = isDescendantOf
+
+size :: SetTree a -> Int
+size (SetTree _ xs) = 1 + getSum (F.foldMap (Sum . size) xs)
 
 isChildOf :: Eq a => a -> SetTree a -> Bool
 isChildOf x (SetTree _ ys) =

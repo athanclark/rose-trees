@@ -20,6 +20,8 @@ import qualified Data.Set.Class as Sets
 import Control.Applicative
 import Control.Monad
 
+import Test.QuickCheck
+
 
 -- * Forest
 
@@ -29,6 +31,12 @@ data KnuthForest a = Fork { kNode :: a
                    | Nil
   deriving (Show, Eq, Functor)
 
+instance Arbitrary a => Arbitrary (KnuthForest a) where
+  arbitrary = oneof [ return Nil
+                    , liftA3 Fork arbitrary arbitrary arbitrary
+                    ]
+
+
 -- | Siblings before children
 instance Ord a => Ord (KnuthForest a) where
   compare (Fork x xc xs) (Fork y yc ys) =
@@ -36,10 +44,6 @@ instance Ord a => Ord (KnuthForest a) where
   compare Nil Nil = EQ
   compare Nil _ = LT
   compare _ Nil = GT
-
--- TODO:
--- Data.Set.Class instances
--- isSubtreeOf, etc.
 
 -- | Zippy
 instance Applicative KnuthForest where

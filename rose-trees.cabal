@@ -20,8 +20,11 @@ Library
   Build-Depends:        base >= 4.6 && < 5
                       , containers
                       , semigroups
+                      , semigroupoids
                       , witherable
                       , sets
+                      , QuickCheck
+                      , quickcheck-instances
 
 Test-Suite spec
   Type:                 exitcode-stdio-1.0

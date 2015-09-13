@@ -27,12 +27,21 @@ import qualified Data.Tree.Knuth.Forest as KF
 import Data.Semigroup
 import Data.Foldable as F
 import Data.Maybe
+import qualified Data.Set.Class as Sets
 import Control.Applicative
 import Control.Monad
+
+import Test.QuickCheck
 
 
 newtype KnuthTree a = KnuthTree { unKnuthTree :: (a, KF.KnuthForest a) }
   deriving (Show, Eq, Functor, Foldable, Traversable)
+
+instance Arbitrary a => Arbitrary (KnuthTree a) where
+  arbitrary = do
+    x <- arbitrary
+    xs <- arbitrary
+    return $ KnuthTree (x,xs)
 
 firstTree :: KF.KnuthForest a -> Maybe (KnuthTree a)
 firstTree KF.Nil = Nothing
@@ -52,6 +61,14 @@ instance Monad KnuthTree where
 instance Semigroup (KnuthTree a) where
   (<>) = union
 
+instance Sets.HasSize (KnuthTree a) where
+  size = size
+
+instance Sets.HasSingleton a (KnuthTree a) where
+  singleton = singleton
+
+instance Sets.HasUnion (KnuthTree a) where
+  union = union
 
 -- ** Query
 size :: KnuthTree a -> Int
