@@ -13,6 +13,10 @@ data SetTree a = SetTree
   , sChildren :: Set.Set (SetTree a)
   } deriving (Show, Eq, Ord)
 
+-- TODO:
+-- - Semigroup over union?
+-- - Foldable, Traversable? Foldable1
+
 -- * Query
 
 -- | set-like alias for @isDescendantOf@.
@@ -59,37 +63,6 @@ delete x = filter (/= x)
 
 singleton :: a -> SetTree a
 singleton x = SetTree x Set.empty
-
--- * Combination
-
--- -- | Prefer the second
--- union :: Ord a => SetTree a -> SetTree a -> SetTree a
--- union (SetTree _ xs) (SetTree y ys)
---   | xs == Set.empty = SetTree y ys
---   | ys == Set.empty = SetTree y xs
---   | otherwise = SetTree y $ childs xs ys
---   where
---     childs :: Ord a => Set.Set (SetTree a) -> Set.Set (SetTree a) -> Set.Set (SetTree a)
---     childs xs ys = Set.fromList $ F.foldr go (Set.toList xs) (Set.toList ys)
---       where go y@(SetTree _ ys) = insertWhen (not . eqHead y) y (`childs` ys)
---             insertWhen _ i _ [] = [i]
---             insertWhen p i h (x@(SetTree x' xs'):xs)
---               | p x = x:insertWhen p i h xs
---               | otherwise = SetTree x' (h xs'):xs
---
--- intersection :: Ord a => SetTree a -> SetTree a -> Maybe (SetTree a)
--- intersection (SetTree x xs) (SetTree y ys) = do
---   guard $ x == y
---   let xs' = Set.toAscList xs
---       ys' = Set.toAscList ys
---   return $ SetTree y $ Set.fromAscList $ same xs' ys'
---   where same [] _ = []
---         same _ [] = []
---         same (x:xs) (y:ys) | x < y = same xs (y:ys)
---                            | x > y = same (x:xs) ys
---                            | otherwise = x : same xs ys
-
--- difference :: SetTree a -> SetTree a -> SetTree a
 
 -- * Filtering
 

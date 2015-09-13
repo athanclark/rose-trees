@@ -15,9 +15,13 @@ Library
   GHC-Options:          -Wall
   Exposed-Modules:      Data.Tree.Rose
                         Data.Tree.Knuth
+                        Data.Tree.Knuth.Forest
                         Data.Tree.Set
   Build-Depends:        base >= 4.6 && < 5
                       , containers
+                      , semigroups
+                      , witherable
+                      , sets
 
 Test-Suite spec
   Type:                 exitcode-stdio-1.0

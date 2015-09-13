@@ -1,7 +1,11 @@
 {-# LANGUAGE
     KindSignatures
   , DeriveFunctor
+  , DeriveFoldable
+  , DeriveTraversable
   , GeneralizedNewtypeDeriving
+  , MultiParamTypeClasses
+  , FlexibleInstances
   #-}
 
 -- |
@@ -16,57 +20,105 @@
 -- An implementation of
 -- <https://en.wikipedia.org/wiki/Left-child_right-sibling_binary_tree left-child, right-sibling binary trees>.
 
-
 module Data.Tree.Knuth where
 
-import Prelude hiding (foldr)
-import Data.Monoid
-import Data.Foldable
-import Data.Traversable
+import qualified Data.Tree.Knuth.Forest as KF
+
+import Data.Semigroup
+import Data.Foldable as F
+import Data.Maybe
 import Control.Applicative
 import Control.Monad
 
 
-data KnuthForest a = Fork { kNode :: a
-                          , kChildren :: KnuthForest a
-                          , kSiblings :: KnuthForest a }
-                   | Nil
-  deriving (Show, Eq, Functor)
+newtype KnuthTree a = KnuthTree { unKnuthTree :: (a, KF.KnuthForest a) }
+  deriving (Show, Eq, Functor, Foldable, Traversable)
 
--- | Zipper-style
-instance Applicative KnuthForest where
-  pure x = Fork x Nil Nil
-  Nil <*> _ = Nil
-  _ <*> Nil = Nil
-  (Fork f fc fs) <*> (Fork x xc xs) =
-    Fork (f x) (fc <*> xc) (fs <*> xs)
-
--- | Breadth-first
-instance Monad KnuthForest where
-  return x = Fork x Nil Nil
-  Nil >>= _ = Nil
-  (Fork x xc xs) >>= f = f x `union` (xs >>= f) `union` (xc >>= f)
-
-union :: KnuthForest a -> KnuthForest a -> KnuthForest a
-union Nil _ = Nil
-union (Fork x xc Nil) y = Fork x xc y
-union (Fork x xc xs) y = Fork x xc $ union xs y
-
-instance Monoid (KnuthForest a) where
-  mempty = Nil
-  mappend = union
-
--- | Breadth-first
-instance Foldable KnuthForest where
-  foldr _ acc Nil = acc
-  foldr f acc (Fork x xc xs) =
-    foldr f (foldr f (f x acc) xs) xc
+firstTree :: KF.KnuthForest a -> Maybe (KnuthTree a)
+firstTree KF.Nil = Nothing
+firstTree (KF.Fork x xc _) = Just $ KnuthTree (x,xc)
 
 
+instance Applicative KnuthTree where
+  pure x = KnuthTree (x,KF.Nil)
+  (KnuthTree (f,fs)) <*> (KnuthTree (x,xs)) = KnuthTree (f x,fs <*> xs)
 
-newtype KnuthTree a = KnuthTree { unKnuthTree :: (a, KnuthForest a) }
-  deriving (Show, Eq, Functor)
+instance Monad KnuthTree where
+  return x = KnuthTree (x,KF.Nil)
+  (KnuthTree (x,xs)) >>= f =
+    let (KnuthTree (y,_)) = f x
+    in KnuthTree (y,xs >>= (snd . unKnuthTree . f))
 
--- | Breadth-first
-instance Foldable KnuthTree where
-  foldr f acc (KnuthTree (x, xs)) = foldr f (f x acc) xs
+instance Semigroup (KnuthTree a) where
+  (<>) = union
+
+
+-- ** Query
+size :: KnuthTree a -> Int
+size (KnuthTree (_,xs)) = 1 + KF.size xs
+
+elem :: Eq a => a -> KnuthTree a -> Bool
+elem x (KnuthTree (y,ys)) = x == y || KF.elem x ys
+
+isSubtreeOf :: Eq a => KnuthTree a -> KnuthTree a -> Bool
+isSubtreeOf xss yss@(KnuthTree (_,ys)) = xss == yss || go ys
+  where
+    go KF.Nil = False
+    go zss@(KF.Fork x xc xs) = xss == fromJust (firstTree zss) || go xs || go xc
+
+-- | Bottom-up depth-first
+isSubtreeOf' :: Eq a => KnuthTree a -> KnuthTree a -> Bool
+isSubtreeOf' xss yss@(KnuthTree (_,ys)) = go ys || xss == yss
+  where
+    go KF.Nil = False
+    go zss@(KF.Fork x xc xs) = go xc || go xs || xss == fromJust (firstTree zss)
+
+isProperSubtreeOf :: Eq a => KnuthTree a -> KnuthTree a -> Bool
+isProperSubtreeOf xss (KnuthTree (_,ys)) = go ys
+  where
+    go KF.Nil = False
+    go zss@(KF.Fork x xc xs) = xss == fromJust (firstTree zss) || go xs || go xc
+
+-- | Bottom-up depth-first
+isProperSubtreeOf' :: Eq a => KnuthTree a -> KnuthTree a -> Bool
+isProperSubtreeOf' xss (KnuthTree (_,ys)) = go ys
+  where
+    go KF.Nil = False
+    go zss@(KF.Fork x xc xs) = go xc || go xs || xss == fromJust (firstTree zss)
+
+isChildOf :: Eq a => a -> KnuthTree a -> Bool
+isChildOf x (KnuthTree (_,ys)) = KF.isChildOf x ys
+
+isDescendantOf :: Eq a => a -> KnuthTree a -> Bool
+isDescendantOf x (KnuthTree (y,ys)) = x == y || KF.isDescendantOf x ys
+
+isProperDescendantOf :: Eq a => a -> KnuthTree a -> Bool
+isProperDescendantOf x (KnuthTree (_,ys)) = KF.isDescendantOf x ys
+
+-- ** Construction
+
+singleton :: a -> KnuthTree a
+singleton x = KnuthTree (x,KF.Nil)
+
+delete :: Eq a => a -> KnuthTree a -> Maybe (KnuthTree a)
+delete x (KnuthTree (y,ys)) | x == y = Nothing
+                            | otherwise = Just $ KnuthTree (y, KF.delete x ys)
+
+-- ** Combination
+
+union :: KnuthTree a -> KnuthTree a -> KnuthTree a
+union (KnuthTree (_,xs)) (KnuthTree (y,ys)) = KnuthTree (y, KF.union xs ys)
+
+intersection :: Eq a => KnuthTree a -> KnuthTree a -> Maybe (KnuthTree a)
+intersection (KnuthTree (x,xs)) (KnuthTree (y,ys)) = do
+  guard $ x == y
+  return $ KnuthTree (y,KF.intersection xs ys)
+
+difference :: Eq a => KnuthTree a -> KnuthTree a -> Maybe (KnuthTree a)
+difference xss@(KnuthTree (x,xs)) (KnuthTree (y,ys)) = do
+  guard $ x /= y
+  return $ KnuthTree (x,go ys)
+  where
+    go KF.Nil = KF.Nil
+    go zss@(KF.Fork x xc xs) | xss == fromJust (firstTree zss) = KF.Nil
+                             | otherwise = KF.Fork x (go xc) (go xs)

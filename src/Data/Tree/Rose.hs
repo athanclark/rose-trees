@@ -10,6 +10,9 @@ module Data.Tree.Rose where
 
 import Data.Tree (Tree (Node))
 import Data.Tree.Knuth
+import Data.Tree.Knuth.Forest as KF
+import Data.Tree.Set
+import qualified Data.Set as Set
 
 
 type family Head (x :: *) :: *
@@ -29,9 +32,25 @@ instance RoseTree Tree where
   (@->) = Node
 
 
--- Data.Tree.Knuth
+-- Data.Tree.Knuth.Forest
 type instance Head (KnuthForest a) = a
 type instance Tail (KnuthForest a) = KnuthForest a
 
 instance RoseTree KnuthForest where
   x @-> xs = Fork x xs Nil
+
+
+-- Data.Tree.Knuth
+type instance Head (KnuthTree a) = a
+type instance Tail (KnuthTree a) = KnuthForest a
+
+instance RoseTree KnuthTree where
+  x @-> xs = KnuthTree (x,xs)
+
+
+-- Data.Tree.Set
+type instance Head (SetTree a) = a
+type instance Tail (SetTree a) = Set.Set (SetTree a)
+
+instance RoseTree SetTree where
+  (@->) = SetTree
