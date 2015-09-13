@@ -1,6 +1,5 @@
 {-# LANGUAGE
-    KindSignatures
-  , DeriveFunctor
+    DeriveFunctor
   , DeriveFoldable
   , DeriveTraversable
   , GeneralizedNewtypeDeriving
