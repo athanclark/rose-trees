@@ -35,7 +35,11 @@ Test-Suite spec
                       , test
   Ghc-Options:          -Wall
   Main-Is:              Spec.hs
-  Other-Modules:        Data.Tree.RoseSpec
+  Other-Modules:        Data.Tree.Knuth
+                        Data.Tree.Knuth.Forest
+                        Data.Tree.Rose
+                        Data.Tree.Set
+                        Data.Tree.RoseSpec
   Build-Depends:        base
                       , rose-trees
                       , witherable
@@ -55,7 +59,12 @@ Benchmark bench
                       , bench
   Ghc-Options:          -Wall
   Main-Is:              Bench.hs
-  Other-Modules:        Data.TreeBench
+  Other-Modules:        Data.Tree.Knuth
+                        Data.Tree.Knuth.Forest
+                        Data.Tree.Rose
+                        Data.Tree.Set
+                        Data.TreeBench
+                        Data.Tree.SetBench
   Build-Depends:        base
                       , rose-trees
                       , witherable
