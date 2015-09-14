@@ -30,9 +30,18 @@ tree5 = evalState (makeWith 5 5 2) 1
 
 
 data_settree_bench = bgroup "Data.Tree.Set"
-  [ bench "1" $ whnf (elem 1) tree1
-  , bench "2" $ whnf (elem 2) tree2
-  , bench "3" $ whnf (elem 5) tree3
-  , bench "4" $ whnf (elem 18) tree4
-  , bench "5" $ whnf (elem 23) tree5
+  [ bgroup "depth"
+    [ bench "1" $ whnf (elem 1) tree1
+    , bench "2" $ whnf (elem 2) tree2
+    , bench "3" $ whnf (elem 5) tree3
+    , bench "4" $ whnf (elem 18) tree4
+    , bench "5" $ whnf (elem 23) tree5
+    ]
+  , bgroup "width"
+    [ bench "1" $ whnf (elem 1) tree1
+    , bench "2" $ whnf (elem 2) tree2
+    , bench "3" $ whnf (elem 6) tree3
+    , bench "4" $ whnf (elem 20) tree4
+    , bench "5" $ whnf (elem 25) tree5
+    ]
   ]

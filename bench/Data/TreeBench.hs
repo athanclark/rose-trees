@@ -29,15 +29,21 @@ tree5 = evalState (makeWith 5 5 2) 1
 
 
 data_tree_bench = bgroup "Data.Tree"
-  [ bench "1" $ whnf (elemT 1) tree1
-  , bench "2" $ whnf (elemT 2) tree2
-  , bench "3" $ whnf (elemT 5) tree3
-  , bench "4" $ whnf (elemT 18) tree4
-  , bench "5" $ whnf (elemT 23) tree5
+  [ bgroup "depth"
+    [ bench "1" $ whnf (elemT 1) tree1
+    , bench "2" $ whnf (elemT 2) tree2
+    , bench "3" $ whnf (elemT 5) tree3
+    , bench "4" $ whnf (elemT 18) tree4
+    , bench "5" $ whnf (elemT 23) tree5
+    ]
+  , bgroup "width"
+    [ bench "1" $ whnf (elemT 1) tree1
+    , bench "2" $ whnf (elemT 2) tree2
+    , bench "3" $ whnf (elemT 6) tree3
+    , bench "4" $ whnf (elemT 20) tree4
+    , bench "5" $ whnf (elemT 25) tree5
+    ]
   ]
 
 elemT :: Eq a => a -> Tree a -> Bool
 elemT x (Node y ys) = x == y || getAny (foldMap (Any . elemT x) ys)
-
-sizeT :: Tree a -> Int
-sizeT (Node _ xs) = 1 + getSum (foldMap (Sum . sizeT) xs)
