@@ -8,6 +8,7 @@ Synopsis:               A collection of rose tree structures.
 -- Description:
 Cabal-Version:          >= 1.10
 Build-Type:             Simple
+Category:               Data, Tree
 
 Library
   Default-Language:     Haskell2010
@@ -65,6 +66,7 @@ Benchmark bench
                         Data.Tree.Set
                         Data.TreeBench
                         Data.Tree.SetBench
+                        Data.Tree.KnuthBench
   Build-Depends:        base
                       , rose-trees
                       , witherable
