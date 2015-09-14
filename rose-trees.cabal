@@ -34,7 +34,14 @@ Test-Suite spec
   Ghc-Options:          -Wall
   Main-Is:              Spec.hs
   Build-Depends:        base
-                      , hspec
+                      , rose-trees
+                      , witherable
+                      , containers
+                      , semigroups
+                      , semigroupoids
+                      , sets
+                      , tasty
+                      , tasty-quickcheck
                       , QuickCheck
                       , quickcheck-instances
 
