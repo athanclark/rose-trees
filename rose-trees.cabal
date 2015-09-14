@@ -25,6 +25,8 @@ Library
                       , sets
                       , QuickCheck
                       , quickcheck-instances
+                      -- , mtl
+                      -- , criterion
 
 Test-Suite spec
   Type:                 exitcode-stdio-1.0
@@ -33,6 +35,7 @@ Test-Suite spec
                       , test
   Ghc-Options:          -Wall
   Main-Is:              Spec.hs
+  Other-Modules:        Data.Tree.RoseSpec
   Build-Depends:        base
                       , rose-trees
                       , witherable
@@ -52,8 +55,18 @@ Benchmark bench
                       , bench
   Ghc-Options:          -Wall
   Main-Is:              Bench.hs
+  Other-Modules:        Data.TreeBench
   Build-Depends:        base
                       , rose-trees
+                      , witherable
+                      , containers
+                      , semigroups
+                      , semigroupoids
+                      , sets
+                      , QuickCheck
+                      , quickcheck-instances
+                      , mtl
+                      , criterion
 
 Source-Repository head
   Type:                 git
