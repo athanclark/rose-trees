@@ -23,7 +23,7 @@ Library
                       , semigroups
                       , semigroupoids
                       , witherable
-                      , sets
+                      , sets >= 0.0.5
                       , QuickCheck
                       , quickcheck-instances
                       , mtl
