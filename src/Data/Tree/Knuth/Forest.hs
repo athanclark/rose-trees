@@ -1,5 +1,8 @@
 {-# LANGUAGE
     DeriveFunctor
+  , DeriveGeneric
+  , DeriveTraversable
+  , DeriveDataTypeable
   , MultiParamTypeClasses
   , FlexibleInstances
   #-}
@@ -16,21 +19,30 @@ import qualified Data.Set.Class as Sets
 import Control.Applicative
 import Control.Monad
 
+import Data.Data
+import Data.Typeable
+import GHC.Generics
+import Control.DeepSeq
 import Test.QuickCheck
 
 
 -- * Forest
 
-data KnuthForest a = Fork { kNode :: a
-                          , kChildren :: KnuthForest a
-                          , kSiblings :: KnuthForest a }
-                   | Nil
-  deriving (Show, Eq, Functor)
+data KnuthForest a
+  = Fork { kNode     :: a
+         , kChildren :: KnuthForest a
+         , kSiblings :: KnuthForest a
+         }
+  | Nil
+  deriving (Show, Eq, Functor, Traversable, Generic, Data, Typeable)
+
+instance NFData a => NFData (KnuthForest a)
 
 instance Arbitrary a => Arbitrary (KnuthForest a) where
-  arbitrary = oneof [ return Nil
-                    , liftA3 Fork arbitrary arbitrary arbitrary
-                    ]
+  arbitrary =
+    oneof [ return Nil
+          , liftA3 Fork arbitrary arbitrary arbitrary
+          ]
 
 
 -- | Siblings before children
@@ -38,8 +50,8 @@ instance Ord a => Ord (KnuthForest a) where
   compare (Fork x xc xs) (Fork y yc ys) =
     compare x y <> compare xs ys <> compare xc yc
   compare Nil Nil = EQ
-  compare Nil _ = LT
-  compare _ Nil = GT
+  compare Nil _   = LT
+  compare _ Nil   = GT
 
 -- | Zippy
 instance Applicative KnuthForest where
@@ -55,8 +67,8 @@ instance Alternative KnuthForest where
 
 -- | Breadth-first
 instance Monad KnuthForest where
-  return x = Fork x Nil Nil
-  Nil >>= _ = Nil
+  return = pure
+  Nil            >>= _ = Nil
   (Fork x xc xs) >>= f = f x `union` (xs >>= f) `union` (xc >>= f)
 
 instance MonadPlus KnuthForest where
@@ -67,7 +79,7 @@ instance Semigroup (KnuthForest a) where
   (<>) = union
 
 instance Monoid (KnuthForest a) where
-  mempty = Nil
+  mempty  = Nil
   mappend = union
 
 -- | Breadth-first
@@ -76,15 +88,11 @@ instance Foldable KnuthForest where
   foldr f acc (Fork x xc xs) =
     foldr f (foldr f (f x acc) xs) xc
 
-instance Traversable KnuthForest where
-  sequenceA Nil = pure Nil
-  sequenceA (Fork x xc xs) = liftA3 Fork x (sequenceA xc) (sequenceA xs)
-
 instance Witherable KnuthForest where
   catMaybes Nil = Nil
   catMaybes (Fork mx xc xs) = case mx of
     Nothing -> Nil
-    Just x -> Fork x (catMaybes xc) (catMaybes xs)
+    Just x  -> Fork x (catMaybes xc) (catMaybes xs)
 
 instance Sets.HasUnion (KnuthForest a) where
   union = union
@@ -176,9 +184,9 @@ delete x (Fork y yc ys) | x == y = Nil
 -- ** Combination
 
 union :: KnuthForest a -> KnuthForest a -> KnuthForest a
-union Nil y = y
+union Nil             y = y
 union (Fork x xc Nil) y = Fork x xc y
-union (Fork x xc xs) y = Fork x xc $ union xs y
+union (Fork x xc xs)  y = Fork x xc $ union xs y
 
 intersection :: Eq a => KnuthForest a -> KnuthForest a -> KnuthForest a
 intersection Nil _ = Nil

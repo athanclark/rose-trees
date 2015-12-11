@@ -2,6 +2,8 @@
     DeriveFunctor
   , DeriveFoldable
   , DeriveTraversable
+  , DeriveGeneric
+  , DeriveDataTypeable
   , GeneralizedNewtypeDeriving
   , MultiParamTypeClasses
   , FlexibleInstances
@@ -29,16 +31,21 @@ import Data.Maybe
 import qualified Data.Set.Class as Sets
 import Control.Applicative
 import Control.Monad
+import Control.DeepSeq
 
+import Data.Data
+import Data.Typeable
+import GHC.Generics
 import Test.QuickCheck
 
 
-newtype KnuthTree a = KnuthTree { unKnuthTree :: (a, KF.KnuthForest a) }
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+newtype KnuthTree a = KnuthTree {
+  unKnuthTree :: (a, KF.KnuthForest a)
+  } deriving (Show, Eq, Functor, Foldable, Traversable, Generic, Data, Typeable)
 
 instance Arbitrary a => Arbitrary (KnuthTree a) where
   arbitrary = do
-    x <- arbitrary
+    x  <- arbitrary
     xs <- arbitrary
     return $ KnuthTree (x,xs)
 
