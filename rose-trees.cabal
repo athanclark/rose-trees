@@ -18,7 +18,7 @@ Library
                         Data.Tree.Knuth
                         Data.Tree.Knuth.Forest
                         Data.Tree.Set
-  Build-Depends:        base >= 4.6 && < 5
+  Build-Depends:        base >= 4.8 && < 5
                       , containers
                       , deepseq
                       , mtl
@@ -34,7 +34,7 @@ Test-Suite spec
   Default-Language:     Haskell2010
   Hs-Source-Dirs:       src
                       , test
-  Ghc-Options:          -Wall
+  Ghc-Options:          -Wall -threaded
   Main-Is:              Spec.hs
   Other-Modules:        Data.Tree.Knuth
                         Data.Tree.Knuth.Forest
@@ -58,7 +58,7 @@ Benchmark bench
   Default-Language:     Haskell2010
   Hs-Source-Dirs:       src
                       , bench
-  Ghc-Options:          -Wall
+  Ghc-Options:          -Wall -threaded
   Main-Is:              Bench.hs
   Other-Modules:        Data.Tree.Knuth
                         Data.Tree.Knuth.Forest

@@ -26,22 +26,21 @@ module Data.Tree.Knuth where
 import qualified Data.Tree.Knuth.Forest as KF
 
 import Data.Semigroup
-import Data.Foldable as F
 import Data.Maybe
 import qualified Data.Set.Class as Sets
-import Control.Applicative
 import Control.Monad
 import Control.DeepSeq
 
 import Data.Data
-import Data.Typeable
 import GHC.Generics
 import Test.QuickCheck
 
 
-newtype KnuthTree a = KnuthTree {
-  unKnuthTree :: (a, KF.KnuthForest a)
+newtype KnuthTree a = KnuthTree
+  { unKnuthTree :: (a, KF.KnuthForest a)
   } deriving (Show, Eq, Functor, Foldable, Traversable, Generic, Data, Typeable)
+
+instance NFData a => NFData (KnuthTree a)
 
 instance Arbitrary a => Arbitrary (KnuthTree a) where
   arbitrary = do
@@ -87,27 +86,27 @@ isSubtreeOf :: Eq a => KnuthTree a -> KnuthTree a -> Bool
 isSubtreeOf xss yss@(KnuthTree (_,ys)) = xss == yss || go ys
   where
     go KF.Nil = False
-    go zss@(KF.Fork x xc xs) = xss == fromJust (firstTree zss) || go xs || go xc
+    go zss@(KF.Fork _ xc xs) = xss == fromJust (firstTree zss) || go xs || go xc
 
 -- | Bottom-up depth-first
 isSubtreeOf' :: Eq a => KnuthTree a -> KnuthTree a -> Bool
 isSubtreeOf' xss yss@(KnuthTree (_,ys)) = go ys || xss == yss
   where
     go KF.Nil = False
-    go zss@(KF.Fork x xc xs) = go xc || go xs || xss == fromJust (firstTree zss)
+    go zss@(KF.Fork _ xc xs) = go xc || go xs || xss == fromJust (firstTree zss)
 
 isProperSubtreeOf :: Eq a => KnuthTree a -> KnuthTree a -> Bool
 isProperSubtreeOf xss (KnuthTree (_,ys)) = go ys
   where
     go KF.Nil = False
-    go zss@(KF.Fork x xc xs) = xss == fromJust (firstTree zss) || go xs || go xc
+    go zss@(KF.Fork _ xc xs) = xss == fromJust (firstTree zss) || go xs || go xc
 
 -- | Bottom-up depth-first
 isProperSubtreeOf' :: Eq a => KnuthTree a -> KnuthTree a -> Bool
 isProperSubtreeOf' xss (KnuthTree (_,ys)) = go ys
   where
     go KF.Nil = False
-    go zss@(KF.Fork x xc xs) = go xc || go xs || xss == fromJust (firstTree zss)
+    go zss@(KF.Fork _ xc xs) = go xc || go xs || xss == fromJust (firstTree zss)
 
 isChildOf :: Eq a => a -> KnuthTree a -> Bool
 isChildOf x (KnuthTree (_,ys)) = KF.isChildOf x ys
@@ -124,8 +123,9 @@ singleton :: a -> KnuthTree a
 singleton x = KnuthTree (x,KF.Nil)
 
 delete :: Eq a => a -> KnuthTree a -> Maybe (KnuthTree a)
-delete x (KnuthTree (y,ys)) | x == y = Nothing
-                            | otherwise = Just $ KnuthTree (y, KF.delete x ys)
+delete x (KnuthTree (y,ys))
+  | x == y    = Nothing
+  | otherwise = Just $ KnuthTree (y, KF.delete x ys)
 
 -- ** Combination
 
@@ -138,10 +138,11 @@ intersection (KnuthTree (x,xs)) (KnuthTree (y,ys)) = do
   return $ KnuthTree (y,KF.intersection xs ys)
 
 difference :: Eq a => KnuthTree a -> KnuthTree a -> Maybe (KnuthTree a)
-difference xss@(KnuthTree (x,xs)) (KnuthTree (y,ys)) = do
+difference xss@(KnuthTree (x,_)) (KnuthTree (y,ys)) = do
   guard $ x /= y
   return $ KnuthTree (x,go ys)
   where
     go KF.Nil = KF.Nil
-    go zss@(KF.Fork x xc xs) | xss == fromJust (firstTree zss) = KF.Nil
-                             | otherwise = KF.Fork x (go xc) (go xs)
+    go zss@(KF.Fork x' xc xs)
+      | xss == fromJust (firstTree zss) = KF.Nil
+      | otherwise                       = KF.Fork x' (go xc) (go xs)

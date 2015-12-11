@@ -1,5 +1,7 @@
 {-# LANGUAGE
     DeriveFoldable
+  , DeriveGeneric
+  , DeriveDataTypeable
   , FlexibleInstances
   , MultiParamTypeClasses
   #-}
@@ -10,13 +12,15 @@ import Prelude hiding (map, elem, filter)
 import qualified Data.Set as Set
 import qualified Data.Foldable as F
 import qualified Data.Maybe as M
-import Data.Monoid hiding ((<>))
 import Data.Semigroup
 import Data.Semigroup.Foldable
 import qualified Data.Set.Class as Sets
 import Control.Applicative
 import Control.Monad
 
+import Data.Data
+import GHC.Generics
+import Control.DeepSeq
 import Test.QuickCheck
 import Test.QuickCheck.Instances
 
@@ -24,7 +28,9 @@ import Test.QuickCheck.Instances
 data SetTree a = SetTree
   { sNode     :: a
   , sChildren :: Set.Set (SetTree a)
-  } deriving (Show, Eq, Ord, Foldable)
+  } deriving (Show, Eq, Ord, Foldable, Generic, Data, Typeable)
+
+instance NFData a => NFData (SetTree a)
 
 instance (Ord a, Arbitrary a) => Arbitrary (SetTree a) where
   arbitrary = liftA2 SetTree arbitrary arbitrary

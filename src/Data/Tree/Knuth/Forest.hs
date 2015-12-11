@@ -10,17 +10,14 @@
 module Data.Tree.Knuth.Forest where
 
 import Prelude hiding (foldr, elem)
-import Data.Monoid hiding ((<>))
 import Data.Semigroup
 import Data.Foldable hiding (elem)
 import Data.Witherable
-import Data.Traversable
 import qualified Data.Set.Class as Sets
 import Control.Applicative
 import Control.Monad
 
 import Data.Data
-import Data.Typeable
 import GHC.Generics
 import Control.DeepSeq
 import Test.QuickCheck
