@@ -1,5 +1,5 @@
 Name:                   rose-trees
-Version:                0.0.2.1
+Version:                0.0.3
 Author:                 Athan Clark <athan.clark@gmail.com>
 Maintainer:             Athan Clark <athan.clark@gmail.com>
 License:                BSD3
@@ -42,14 +42,15 @@ Test-Suite spec
                         Data.Tree.Set
                         Data.Tree.RoseSpec
   Build-Depends:        base
+                      , deepseq
                       , rose-trees
-                      , witherable
                       , containers
                       , semigroups
                       , semigroupoids
                       , sets
                       , tasty
                       , tasty-quickcheck
+                      , witherable
                       , QuickCheck
                       , quickcheck-instances
 
@@ -68,15 +69,16 @@ Benchmark bench
                         Data.Tree.SetBench
                         Data.Tree.KnuthBench
   Build-Depends:        base
+                      , deepseq
                       , rose-trees
-                      , witherable
                       , containers
+                      , mtl
                       , semigroups
                       , semigroupoids
                       , sets
+                      , witherable
                       , QuickCheck
                       , quickcheck-instances
-                      , mtl
                       , criterion
 
 Source-Repository head
