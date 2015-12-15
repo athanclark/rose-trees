@@ -27,7 +27,7 @@ import Test.QuickCheck.Instances
 
 data SetTree a = SetTree
   { sNode     :: a
-  , sChildren :: Set.Set (SetTree a)
+  , sChildren :: !(Set.Set (SetTree a))
   } deriving (Show, Eq, Ord, Foldable, Generic, Data, Typeable)
 
 instance NFData a => NFData (SetTree a)
