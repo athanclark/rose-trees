@@ -21,6 +21,8 @@ import Control.Monad
 import Data.Data
 import GHC.Generics
 import Control.DeepSeq
+import Test.QuickCheck
+import Test.QuickCheck.Instances
 
 
 data HashTree a = HashTree
@@ -33,6 +35,9 @@ instance Hashable a => Hashable (HashTree a) where
     salt `hashWithSalt` x `hashWithSalt` xs
 
 instance NFData a => NFData (HashTree a)
+
+instance (Eq a, Hashable a, Arbitrary a) => Arbitrary (HashTree a) where
+  arbitrary = HashTree <$> arbitrary <*> arbitrary
 
 instance Foldable1 HashTree where
   fold1 (HashTree x xs) = F.foldr (\a acc -> sNode a <> acc) x xs
@@ -52,6 +57,11 @@ instance (Eq a, Hashable a) => Semigroup (HashTree a) where
 -- | set-like alias for @isDescendantOf@.
 elem :: Eq a => a -> HashTree a -> Bool
 elem = isDescendantOf
+
+elemPath :: Eq a => [a] -> HashTree a -> Bool
+elemPath [] _ = True
+elemPath (x:xs) (HashTree y ys) =
+  (x == y) && getAny (F.foldMap (Any . elemPath xs) ys)
 
 size :: HashTree a -> Int
 size (HashTree _ xs) = 1 + getSum (F.foldMap (Sum . size) xs)

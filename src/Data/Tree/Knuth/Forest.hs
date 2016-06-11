@@ -123,6 +123,11 @@ elem :: Eq a => a -> KnuthForest a -> Bool
 elem _ Nil = False
 elem x (Fork y yc ys) = x == y || elem x ys || elem x yc
 
+elemPath :: Eq a => [a] -> KnuthForest a -> Bool
+elemPath [] _ = True
+elemPath (x:xs) (Fork y yc ys) = (x == y && elemPath xs ys) || elemPath (x:xs) yc
+elemPath _ Nil = False
+
 -- Top-down, breadth-first
 isSubforestOf :: Eq a => KnuthForest a -> KnuthForest a -> Bool
 isSubforestOf Nil _ = True

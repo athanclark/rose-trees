@@ -82,6 +82,10 @@ size (KnuthTree (_,xs)) = 1 + KF.size xs
 elem :: Eq a => a -> KnuthTree a -> Bool
 elem x (KnuthTree (y,ys)) = x == y || KF.elem x ys
 
+elemPath :: Eq a => [a] -> KnuthTree a -> Bool
+elemPath [] _ = True
+elemPath (x:xs) (KnuthTree (y,ys)) = x == y && KF.elemPath xs ys
+
 isSubtreeOf :: Eq a => KnuthTree a -> KnuthTree a -> Bool
 isSubtreeOf xss yss@(KnuthTree (_,ys)) = xss == yss || go ys
   where

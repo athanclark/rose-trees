@@ -12,7 +12,9 @@ import Data.Tree (Tree (Node))
 import Data.Tree.Knuth
 import Data.Tree.Knuth.Forest as KF
 import Data.Tree.Set
+import Data.Tree.Hash
 import qualified Data.Set as Set
+import qualified Data.HashSet as HS
 
 
 type family Head (x :: *) :: *
@@ -54,3 +56,11 @@ type instance Tail (SetTree a) = Set.Set (SetTree a)
 
 instance RoseTree SetTree where
   (@->) = SetTree
+
+
+-- Data.Tree.Hash
+type instance Head (HashTree a) = a
+type instance Tail (HashTree a) = HS.HashSet (HashTree a)
+
+instance RoseTree HashTree where
+  (@->) = HashTree

@@ -15,7 +15,6 @@ import qualified Data.Maybe as M
 import Data.Semigroup
 import Data.Semigroup.Foldable
 import qualified Data.Set.Class as Sets
-import Control.Applicative
 import Control.Monad
 
 import Data.Data
@@ -33,7 +32,7 @@ data SetTree a = SetTree
 instance NFData a => NFData (SetTree a)
 
 instance (Ord a, Arbitrary a) => Arbitrary (SetTree a) where
-  arbitrary = liftA2 SetTree arbitrary arbitrary
+  arbitrary = SetTree <$> arbitrary <*> arbitrary
 
 instance Foldable1 SetTree where
   fold1 (SetTree x xs) = F.foldr (\a acc -> sNode a <> acc) x xs
@@ -53,6 +52,11 @@ instance Sets.HasSingleton a (SetTree a) where
 -- | set-like alias for @isDescendantOf@.
 elem :: Eq a => a -> SetTree a -> Bool
 elem = isDescendantOf
+
+elemPath :: Eq a => [a] -> SetTree a -> Bool
+elemPath [] _ = True
+elemPath (x:xs) (SetTree y ys) =
+  (x == y) && getAny (F.foldMap (Any . elemPath xs) ys)
 
 size :: SetTree a -> Int
 size (SetTree _ xs) = 1 + getSum (F.foldMap (Sum . size) xs)
