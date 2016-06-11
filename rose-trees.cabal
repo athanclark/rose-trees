@@ -1,5 +1,5 @@
 Name:                   rose-trees
-Version:                0.0.3
+Version:                0.0.4
 Author:                 Athan Clark <athan.clark@gmail.com>
 Maintainer:             Athan Clark <athan.clark@gmail.com>
 License:                BSD3
@@ -18,13 +18,16 @@ Library
                         Data.Tree.Knuth
                         Data.Tree.Knuth.Forest
                         Data.Tree.Set
+                        Data.Tree.HashSet
   Build-Depends:        base >= 4.8 && < 5
                       , containers
                       , deepseq
+                      , hashable
                       , mtl
                       , semigroups
                       , semigroupoids
                       , sets >= 0.0.5
+                      , unordered-containers
                       , witherable
                       , QuickCheck
                       , quickcheck-instances
