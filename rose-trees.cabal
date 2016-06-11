@@ -18,7 +18,7 @@ Library
                         Data.Tree.Knuth
                         Data.Tree.Knuth.Forest
                         Data.Tree.Set
-                        Data.Tree.HashSet
+                        Data.Tree.Hash
   Build-Depends:        base >= 4.8 && < 5
                       , containers
                       , deepseq

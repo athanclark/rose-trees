@@ -38,6 +38,9 @@ instance (Ord a, Arbitrary a) => Arbitrary (SetTree a) where
 instance Foldable1 SetTree where
   fold1 (SetTree x xs) = F.foldr (\a acc -> sNode a <> acc) x xs
 
+instance Ord a => Semigroup (SetTree a) where
+  (SetTree _ xs) <> (SetTree y ys) = SetTree y (xs <> ys)
+
 instance Sets.HasSize (SetTree a) where
   size = size
 
