@@ -14,6 +14,7 @@ import Data.Semigroup
 import Data.Foldable hiding (elem)
 import Data.Witherable
 import qualified Data.Set.Class as Sets
+import qualified Data.Tree      as T
 import Control.Applicative
 import Control.Monad
 
@@ -204,3 +205,13 @@ difference x Nil = x
 difference (Fork x xc xs) yss@(Fork y _ _)
   | x == y = Nil
   | otherwise = Fork x (difference xc yss) (difference xs yss)
+
+
+toForest :: KnuthForest a -> T.Forest a
+toForest Nil = []
+toForest (Fork x xc xs) = (T.Node x (toForest xs)) : toForest xc
+
+
+fromForest :: T.Forest a -> KnuthForest a
+fromForest [] = Nil
+fromForest (T.Node x xs : xss) = Fork x (fromForest xss) (fromForest xs)

@@ -16,6 +16,7 @@ import Data.Semigroup
 import Data.Semigroup.Foldable
 import qualified Data.Set.Class as Sets
 import Control.Monad
+import qualified Data.Tree as T
 
 import Data.Data
 import GHC.Generics
@@ -118,3 +119,10 @@ mapMaybe :: Eq b => (a -> Maybe b) -> SetTree a -> Maybe (SetTree b)
 mapMaybe p (SetTree x xs) = do
   x' <- p x
   return $ SetTree x' $ Set.fromAscList $ M.mapMaybe (mapMaybe p) $ Set.toAscList xs
+
+
+toTree :: SetTree a -> T.Tree a
+toTree (SetTree x xs) = T.Node x $ toTree <$> Set.toList xs
+
+fromTree :: Ord a => T.Tree a -> SetTree a
+fromTree (T.Node x xs) = SetTree x . Set.fromList $ fromTree <$> xs

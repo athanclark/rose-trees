@@ -28,6 +28,7 @@ import qualified Data.Tree.Knuth.Forest as KF
 import Data.Semigroup
 import Data.Maybe
 import qualified Data.Set.Class as Sets
+import qualified Data.Tree      as T
 import Control.Monad
 import Control.DeepSeq
 
@@ -150,3 +151,11 @@ difference xss@(KnuthTree (x,_)) (KnuthTree (y,ys)) = do
     go zss@(KF.Fork x' xc xs)
       | xss == fromJust (firstTree zss) = KF.Nil
       | otherwise                       = KF.Fork x' (go xc) (go xs)
+
+
+
+toTree :: KnuthTree a -> T.Tree a
+toTree (KnuthTree (x,xs)) = T.Node x $ KF.toForest xs
+
+fromTree :: T.Tree a -> KnuthTree a
+fromTree (T.Node x xs) = KnuthTree (x, KF.fromForest xs)

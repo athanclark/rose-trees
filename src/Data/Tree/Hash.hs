@@ -13,6 +13,7 @@ import qualified Data.HashSet  as HS
 import qualified Data.Foldable as F
 import qualified Data.Maybe    as M
 import qualified Data.Set.Class as Sets
+import qualified Data.Tree      as T
 import Data.Hashable
 import Data.Semigroup
 import Data.Semigroup.Foldable
@@ -125,3 +126,10 @@ mapMaybe p (HashTree x xs) = do
   x' <- p x
   pure . HashTree x' . HS.fromList . M.mapMaybe (mapMaybe p)
                         . HS.toList $ xs
+
+
+toTree :: HashTree a -> T.Tree a
+toTree (HashTree x xs) = T.Node x $ toTree <$> HS.toList xs
+
+fromTree :: (Hashable a, Eq a) => T.Tree a -> HashTree a
+fromTree (T.Node x xs) = HashTree x . HS.fromList $ fromTree <$> xs
