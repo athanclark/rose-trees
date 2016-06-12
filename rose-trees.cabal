@@ -48,11 +48,13 @@ Test-Suite spec
                       , deepseq
                       , rose-trees
                       , containers
+                      , hashable
                       , semigroups
                       , semigroupoids
                       , sets
                       , tasty
                       , tasty-quickcheck
+                      , unordered-containers
                       , witherable
                       , QuickCheck
                       , quickcheck-instances
@@ -75,10 +77,12 @@ Benchmark bench
                       , deepseq
                       , rose-trees
                       , containers
+                      , hashable
                       , mtl
                       , semigroups
                       , semigroupoids
                       , sets
+                      , unordered-containers
                       , witherable
                       , QuickCheck
                       , quickcheck-instances
