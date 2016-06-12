@@ -77,10 +77,12 @@ Benchmark bench
                       , deepseq
                       , rose-trees
                       , containers
+                      , hashable
                       , mtl
                       , semigroups
                       , semigroupoids
                       , sets
+                      , unordered-containers
                       , witherable
                       , QuickCheck
                       , quickcheck-instances
