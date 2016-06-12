@@ -73,6 +73,8 @@ Benchmark bench
                         Data.TreeBench
                         Data.Tree.SetBench
                         Data.Tree.KnuthBench
+                        Data.Tree.HashBench
+                        Data.Build
   Build-Depends:        base
                       , deepseq
                       , rose-trees

@@ -8,6 +8,8 @@ import qualified Data.Set as Set
 import qualified Data.Tree.Set as S
 import qualified Data.Tree.Knuth as K
 import qualified Data.Tree.Knuth.Forest as KF
+import qualified Data.Tree.Hash as HT
+import qualified Data.HashSet as HS
 
 
 import Test.Tasty
@@ -27,6 +29,9 @@ spec = testGroup "Testing trees..."
   , testGroup "Data.Tree.Knuth"
     [ QC.testProperty "element after construction" prop_cons_exists_KnuthTree
     ]
+  , testGroup "Data.Tree.Hash"
+    [ QC.testProperty "element after construction" prop_cons_exists_HashTree
+    ]
   ]
 
 newtype TreeWithElem t e = TreeWithElem {unTreeWithElem :: (e, t e)}
@@ -41,6 +46,9 @@ prop_cons_exists_SetTree x xs = S.elem x $ x @-> xs
 
 prop_cons_exists_KnuthTree :: Int -> KF.KnuthForest Int -> Bool
 prop_cons_exists_KnuthTree x xs = K.elem x $ x @-> xs
+
+prop_cons_exists_HashTree :: Int -> HS.HashSet (HT.HashTree Int) -> Bool
+prop_cons_exists_HashTree x xs = HT.elem x $ x @-> xs
 
 
 -- instance (Arbitrary e

@@ -4,6 +4,7 @@
 
 module Data.TreeBench (data_tree_bench) where
 
+import Data.Build
 import Data.Monoid
 import Data.Tree
 import Data.Tree.Rose
@@ -11,39 +12,29 @@ import Control.Monad.State
 import Criterion
 
 
-newNode :: MonadState Int m => [Tree Int] -> m (Tree Int)
-newNode xs = do x <- get
-                modify (+1)
-                return $ Node x xs
-
--- makeWith :: Int -> Int -> Int -> State Int (Tree Int)
-makeWith d w r | d <= 1 = newNode []
-               | otherwise = do xs <- replicateM w $ makeWith (d-1) (floor $ (fromIntegral w) / r) r
-                                newNode xs
-
-tree1 = evalState (makeWith 1 1 2) 1
-tree2 = evalState (makeWith 2 2 2) 1
-tree3 = evalState (makeWith 3 3 2) 1
-tree4 = evalState (makeWith 4 4 2) 1
-tree5 = evalState (makeWith 5 5 2) 1
+tree1 = evalState (makeWith 10 10 2 [] id) 1
+tree2 = evalState (makeWith 20 20 2 [] id) 1
+tree3 = evalState (makeWith 30 30 2 [] id) 1
+tree4 = evalState (makeWith 40 40 2 [] id) 1
+tree5 = evalState (makeWith 50 50 2 [] id) 1
 
 
 data_tree_bench = bgroup "Data.Tree"
   [ bgroup "depth"
-    [ bench "1" $ whnf (elemT 1) tree1
-    , bench "2" $ whnf (elemT 2) tree2
-    , bench "3" $ whnf (elemT 5) tree3
-    , bench "4" $ whnf (elemT 18) tree4
-    , bench "5" $ whnf (elemT 23) tree5
+    [ bench "1" $ whnf maximum' tree1
+    , bench "2" $ whnf maximum' tree2
+    , bench "3" $ whnf maximum' tree3
+    , bench "4" $ whnf maximum' tree4
+    , bench "5" $ whnf maximum' tree5
     ]
   , bgroup "width"
-    [ bench "1" $ whnf (elemT 1) tree1
-    , bench "2" $ whnf (elemT 2) tree2
-    , bench "3" $ whnf (elemT 6) tree3
-    , bench "4" $ whnf (elemT 20) tree4
-    , bench "5" $ whnf (elemT 25) tree5
+    [ bench "1" $ whnf maximum' tree1
+    , bench "2" $ whnf maximum' tree2
+    , bench "3" $ whnf maximum' tree3
+    , bench "4" $ whnf maximum' tree4
+    , bench "5" $ whnf maximum' tree5
     ]
   ]
 
-elemT :: Eq a => a -> Tree a -> Bool
-elemT x (Node y ys) = x == y || getAny (foldMap (Any . elemT x) ys)
+maximum' :: Tree Int -> Int
+maximum' = maximum

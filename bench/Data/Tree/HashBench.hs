@@ -2,26 +2,25 @@
     FlexibleContexts
   #-}
 
-module Data.Tree.SetBench (data_settree_bench) where
+module Data.Tree.HashBench (data_hashtree_bench) where
 
 import Data.Build
 import Prelude hiding (elem)
 import Data.Monoid
-import qualified Data.Set as Set
-import Data.Tree.Set
+import qualified Data.HashSet as HS
+import Data.Tree.Hash
 import Control.Monad.State
 import Criterion
 
 
+tree1 = evalState (makeWith 10 10 2 HS.empty HS.fromList) 1
+tree2 = evalState (makeWith 20 20 2 HS.empty HS.fromList) 1
+tree3 = evalState (makeWith 30 30 2 HS.empty HS.fromList) 1
+tree4 = evalState (makeWith 40 40 2 HS.empty HS.fromList) 1
+tree5 = evalState (makeWith 50 50 2 HS.empty HS.fromList) 1
 
-tree1 = evalState (makeWith 10 10 2 Set.empty Set.fromList) 1
-tree2 = evalState (makeWith 20 20 2 Set.empty Set.fromList) 1
-tree3 = evalState (makeWith 30 30 2 Set.empty Set.fromList) 1
-tree4 = evalState (makeWith 40 40 2 Set.empty Set.fromList) 1
-tree5 = evalState (makeWith 50 50 2 Set.empty Set.fromList) 1
 
-
-data_settree_bench = bgroup "Data.Tree.Set"
+data_hashtree_bench = bgroup "Data.Tree.Hash"
   [ bgroup "depth"
     [ bench "1" $ whnf maximum' tree1
     , bench "2" $ whnf maximum' tree2
@@ -38,5 +37,5 @@ data_settree_bench = bgroup "Data.Tree.Set"
     ]
   ]
 
-maximum' :: SetTree Int -> Int
+maximum' :: HashTree Int -> Int
 maximum' = maximum
