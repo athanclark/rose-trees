@@ -12,7 +12,7 @@ module Data.Tree.Knuth.Forest where
 import Prelude hiding (foldr, elem)
 import Data.Semigroup
 import Data.Foldable hiding (elem)
-import Data.Witherable
+import Data.Witherable (Filterable, catMaybes)
 import qualified Data.Set.Class as Sets
 import qualified Data.Tree      as T
 import Control.Applicative
@@ -86,7 +86,7 @@ instance Foldable KnuthForest where
   foldr f acc (Fork x xc xs) =
     foldr f (foldr f (f x acc) xs) xc
 
-instance Witherable KnuthForest where
+instance Filterable KnuthForest where
   catMaybes Nil = Nil
   catMaybes (Fork mx xc xs) = case mx of
     Nothing -> Nil

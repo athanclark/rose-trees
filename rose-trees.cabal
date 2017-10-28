@@ -28,7 +28,7 @@ Library
                       , semigroupoids
                       , sets >= 0.0.5
                       , unordered-containers
-                      , witherable
+                      , witherable >= 0.2
                       , QuickCheck
                       , quickcheck-instances
 
@@ -41,6 +41,7 @@ Test-Suite spec
   Main-Is:              Spec.hs
   Other-Modules:        Data.Tree.Knuth
                         Data.Tree.Knuth.Forest
+                        Data.Tree.Hash
                         Data.Tree.Rose
                         Data.Tree.Set
                         Data.Tree.RoseSpec
@@ -70,6 +71,7 @@ Benchmark bench
                         Data.Tree.Knuth.Forest
                         Data.Tree.Rose
                         Data.Tree.Set
+                        Data.Tree.Hash
                         Data.TreeBench
                         Data.Tree.SetBench
                         Data.Tree.KnuthBench
