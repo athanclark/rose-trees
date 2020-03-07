@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4312610834a34adf7fc2b0fe88df80857b9f52a40cb2497441d298cd4ee47bdc
+-- hash: 58e9f4952789e58b7d6ed474e966ba2561af901c13d01a930f58e6c6c67ae4e8
 
 name:           rose-trees
 version:        0.0.4.5
@@ -82,9 +82,8 @@ test-suite rose-trees-test
 
 benchmark rose-trees-bench
   type: exitcode-stdio-1.0
-  main-is: Main.hs
+  main-is: Bench.hs
   other-modules:
-      Bench
       Data.Build
       Data.Tree.HashBench
       Data.Tree.KnuthBench

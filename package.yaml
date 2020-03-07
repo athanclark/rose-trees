@@ -59,7 +59,7 @@ tests:
 
 benchmarks:
   rose-trees-bench:
-    main:                Main.hs
+    main:                Bench.hs
     source-dirs:         bench
     ghc-options:
     - -threaded
