@@ -1,0 +1,74 @@
+name:                rose-trees
+version:             0.0.4.5
+github:              "athanclark/rose-trees"
+license:             BSD3
+author:              "Athan Clark"
+maintainer:          "athan.clark@gmail.com"
+copyright:           "2018, 2019, 2020 Athan Clark"
+category:            Data, Tree
+synopsis:            Various trie implementations in Haskell
+
+ghc-options: -Wall
+
+extra-source-files:
+- README.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on Github at <https://github.com/athanclark/rose-trees#readme>
+
+dependencies:
+  - base >= 4.11 && < 5.0
+  - containers
+  - deepseq
+  - hashable
+  - mtl
+  - semigroups
+  - semigroupoids
+  - sets >= 0.0.5
+  - unordered-containers
+  - witherable >= 0.2
+  - QuickCheck >= 2.9.2
+  - quickcheck-instances
+
+library:
+  source-dirs: src
+
+tests:
+  rose-trees-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -Wall
+    - -with-rtsopts=-N
+    dependencies:
+    - rose-trees
+    - containers
+    - mtl
+    - tasty
+    - tasty-quickcheck
+    - QuickCheck
+    - quickcheck-instances
+
+benchmarks:
+  rose-trees-bench:
+    main:                Main.hs
+    source-dirs:         bench
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -Wall
+    - -with-rtsopts=-N
+    dependencies:
+    - rose-trees
+    - criterion
+    - mtl
+    - unordered-containers
+    - containers
