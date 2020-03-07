@@ -4,7 +4,7 @@ github:              "athanclark/rose-trees"
 license:             BSD3
 author:              "Athan Clark"
 maintainer:          "athan.clark@gmail.com"
-copyright:           "2018, 2019, 2020 Athan Clark"
+copyright:           "2015, 2016, 2017, 2018, 2019, 2020 Athan Clark"
 category:            Data, Tree
 synopsis:            Various trie implementations in Haskell
 
